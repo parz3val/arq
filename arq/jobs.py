@@ -123,10 +123,7 @@ class Job:
         even if the job raised one.
         """
         v = await self._redis.get(result_key_prefix + self.job_id, encoding=None)
-        if v:
-            return deserialize_result(v, deserializer=self._deserializer)
-        else:
-            return None
+        return deserialize_result(v, deserializer=self._deserializer) if v else None
 
     async def status(self) -> JobStatus:
         """

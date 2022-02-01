@@ -79,7 +79,7 @@ def test_next_cron_invalid():
     ],
 )
 def test_next_cron_random(max_previous, kwargs, expected):
-    for i in range(100):
+    for _ in range(100):
         previous = expected - timedelta(seconds=0.9 + random() * max_previous)
         v = next_cron(previous, **kwargs)
         diff = v - previous

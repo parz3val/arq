@@ -103,10 +103,7 @@ def test_redis_settings_validation():
 
         @validator('redis_settings', always=True, pre=True)
         def parse_redis_settings(cls, v):
-            if isinstance(v, str):
-                return RedisSettings.from_dsn(v)
-            else:
-                return v
+            return RedisSettings.from_dsn(v) if isinstance(v, str) else v
 
     s1 = Settings(redis_settings='redis://foobar:123/4')
     assert s1.redis_settings.host == 'foobar'

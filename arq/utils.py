@@ -92,9 +92,7 @@ def truncate(s: str, length: int = DEFAULT_CURTAIL) -> str:
 
 
 def args_to_string(args: Sequence[Any], kwargs: Dict[str, Any]) -> str:
-    arguments = ''
-    if args:
-        arguments = ', '.join(map(repr, args))
+    arguments = ', '.join(map(repr, args)) if args else ''
     if kwargs:
         if arguments:
             arguments += ', '

@@ -111,14 +111,13 @@ class FailedJobs(RuntimeError):
         self.job_results = job_results
 
     def __str__(self) -> str:
-        if self.count == 1 and self.job_results:
-            exc = self.job_results[0].result
-            return f'1 job failed {exc!r}'
-        else:
+        if self.count != 1 or not self.job_results:
             return f'{self.count} jobs failed:\n' + '\n'.join(repr(r.result) for r in self.job_results)
+        exc = self.job_results[0].result
+        return f'1 job failed {exc!r}'
 
     def __repr__(self) -> str:
-        return f'<{str(self)}>'
+        return f'<{self}>'
 
 
 class RetryJob(RuntimeError):
@@ -285,11 +284,10 @@ class Worker:
         if max_burst_jobs is not None:
             self.max_burst_jobs = max_burst_jobs
         await self.async_run()
-        if self.jobs_failed:
-            failed_job_results = [r for r in await self.pool.all_job_results() if not r.success]
-            raise FailedJobs(self.jobs_failed, failed_job_results)
-        else:
+        if not self.jobs_failed:
             return self.jobs_complete
+        failed_job_results = [r for r in await self.pool.all_job_results() if not r.success]
+        raise FailedJobs(self.jobs_failed, failed_job_results)
 
     @property
     def pool(self) -> ArqRedis:

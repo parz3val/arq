@@ -54,10 +54,7 @@ def _get_next_dt(dt_: datetime, options: Options) -> Optional[datetime]:  # noqa
     for field, v in dataclasses.asdict(options).items():
         if v is None:
             continue
-        if field == 'weekday':
-            next_v = dt_.weekday()
-        else:
-            next_v = getattr(dt_, field)
+        next_v = dt_.weekday() if field == 'weekday' else getattr(dt_, field)
         if isinstance(v, int):
             mismatch = next_v != v
         else:
