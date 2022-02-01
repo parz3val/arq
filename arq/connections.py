@@ -137,8 +137,9 @@ class ArqRedis(Redis):  # type: ignore
             job_result_exists = pipe.exists(result_key_prefix + job_id)
             await pipe.execute()
             if await job_exists or await job_result_exists:
-                return None
-
+                # Return tuple with (None, Job) if job exists
+                # This is done to make it easier to abort the job and cancel them later
+                return ( None,  Job(job_id, redis=self, _queue_name=_queue_name, _deserializer=self.job_deserializer))
             enqueue_time_ms = timestamp_ms()
             if _defer_until is not None:
                 score = to_unix_ms(_defer_until)
